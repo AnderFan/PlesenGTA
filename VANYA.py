@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def add_cell(id_of_cell):  # """ добавить клетку перед текущей клеткой """
     ##  у нас всё храниться так [---,[*клетка*,пред клетка индекс, след клетка индекс],---]
     global dead_current
@@ -36,7 +35,7 @@ def generate_cells(cellsLen):
     global dead_current
     global dead_next
 
-    num_of_cells = 5 #колво скок живо сам задаеш
+    num_of_cells = 5 #колво скок живо сам задаешq
     for i in range(1, num_of_cells+1):
         cells[i][0]["type"] = "DEBUG"
         cells[i][1] = i - 1
@@ -62,7 +61,8 @@ def simplified_cells_print(): # debug
             i[0] = "XXX"
         toPrint.append(i)
 
-    print("\n", toPrint, "\n len", len(toPrint))
+    return toPrint
+    #print("\n", toPrint, "\n len", len(toPrint))
 
 def move_energy(xy):
     pass
@@ -90,7 +90,7 @@ def genome_traverse(cell): # NO VALIDATION
 
 
 
-fieldSize = 1000 # высота\широта игр.поля
+fieldSize = 30 # высота\широта игр.поля
 cellsLen = fieldSize ** 2 #  длинна массива с клетками и других связаных (генома, мертвых)
 field = np.zeros(cellsLen).reshape(fieldSize, fieldSize) # создаём матрицу
 
@@ -99,6 +99,7 @@ cells = [[gen_empty_cell(),0,0] for _ in range(cellsLen)]  # linked list, with a
 first_cell = 1
 dead_cells_coords = list(range(cellsLen))
 
+ff = simplified_cells_print()
 
 global dead_current
 global dead_next
@@ -112,7 +113,7 @@ genomes = [[0 for __ in range(12)] for _ in range(cellsLen)] # array with all of
 def setup():
 
     generate_cells(cellsLen)  # тута создаеём
-    print(dead_current)
+#   print(dead_current)
     яша = False;
     #нонаме - перец с костью
 
@@ -139,7 +140,7 @@ def update():
 def loop():
     n = 0
 
-    while(n<1000000000):
+    while(n<10):
         update()
         n += 1
 
