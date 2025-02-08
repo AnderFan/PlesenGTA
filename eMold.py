@@ -1,6 +1,11 @@
 import numpy as np
 import sys
 import pygame
+import random
+
+global cells_len
+fieldSize = 30 # высота\широта игр.поля
+cells_len = fieldSize ** 2 #  длинна массива с клетками и других связаных (генома, мертвых)
 
 def add_cell(id_of_cell):  # """ добавить клетку перед текущей клеткой """ # УДАРЬ МЕНЯ Я НЕ РАБОТАЮ, та всё тише, уже работаешь
     ##  у нас всё храниться так [---,[*клетка*,пред клетка индекс, след клетка индекс],---]
@@ -56,6 +61,9 @@ def generate_cells(cellsLen): # чёт мутное с очередью мерт
         cells[i][0]["type"] = "DEBUG"
         cells[i][1] = i - 1
         cells[i][2] = i + 1
+        cells[i][0][4] = (random.randint(0, fieldSize), random.randint(0, fieldSize)) # рандомно заполняем координаты клетки "xy"
+ #       print(cells[i][0][4])
+ #       print("\n")
 
     cells[1][1] = num_of_cells
     cells[num_of_cells][2] = 0
@@ -216,9 +224,7 @@ def get_dead(): # достать мертвяка из начала очеред
     return cell_id
     # тут возвращаем айди мертвяка
 
-global cells_len
-fieldSize = 30 # высота\широта игр.поля
-cells_len = fieldSize ** 2 #  длинна массива с клетками и других связаных (генома, мертвых)
+
 
 field = [[[0,0] for j in range(fieldSize)] for i in range(fieldSize)] # создаем матрицу с двух-мерным массивом, в пизду нумпи
 
@@ -258,7 +264,11 @@ arg = blockSize, WINDOW_WIDTH, WINDOW_HEIGHT, BLACK
 def render(arg):
     draw_grid(arg)
 
-  #  for i in field:
+    for i in cells:
+        print(i[0]["xy"])
+        #if i[0]["xy"] != (0, 0):
+        #    print(i[0]["xy"])
+
 
 
     for event in pygame.event.get():
@@ -290,6 +300,7 @@ def setup():
     #print(cells)
     #simplified_cells_print()
     # print(genome)
+    render(arg)
 
 
 def update():
@@ -306,7 +317,6 @@ def loop():
     n = 0
 
     while(n<10000000):
-        render(arg)
         update()
         n += 1
 
