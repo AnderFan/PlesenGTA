@@ -17,7 +17,7 @@ def add_cell(id_of_cell):  # """ добавить клетку перед тек
     cells[prev][2] = new_id
     cells[id_of_cell][1] = new_id  # эт мы поменяли индексы в текущей и пред клетке
     # а теперь надо довавить индексы в новой клетке
-    cells[new_id][0] = True
+    cells[new_id][0] = True # Я ПОЛТОРА ЧАСА НЕ МОГ ПОНЯТЬ ПОЧЕМУ НИЧЁ НЕ РАБОТАЕТ, ПОКА НЕ НАШЁЛ ЭТУ ПАДЛУ.
     cells[new_id][1] = prev  # добавляем пред клетку в новую клетку
     cells[new_id][2] = id_of_cell  # добавляем текущию клетку как след клетку для новой клетки
 
@@ -61,9 +61,10 @@ def generate_cells(cellsLen): # чёт мутное с очередью мерт
         cells[i][0]["type"] = "DEBUG"
         cells[i][1] = i - 1
         cells[i][2] = i + 1
-        cells[i][0][4] = (random.randint(0, fieldSize), random.randint(0, fieldSize)) # рандомно заполняем координаты клетки "xy"
- #       print(cells[i][0][4])
- #       print("\n")
+        cells[i][0]["xy"] = (random.randrange(0, fieldSize * block_size, block_size) + block_size/2,
+                             random.randrange(0, fieldSize * block_size, block_size) + block_size/2) # рандомно заполняем координаты клетки "xy" с шагом в величину
+        print(cells[i][0]["xy"])
+        print("\n")
 
     cells[1][1] = num_of_cells
     cells[num_of_cells][2] = 0
@@ -247,44 +248,50 @@ genomes = [[0 for __ in range(12)] for _ in range(cells_len)] # array with all o
 
 
 ##### render
-blockSize = 30
+block_size = 30
 global SCREEN, CLOCK
+
 BLACK = (29, 51, 74)
 WHITE = (255, 255, 255)
+NEW_CELL = (52, 201, 36)
 
-WINDOW_WIDTH = fieldSize * blockSize
-WINDOW_HEIGHT = fieldSize * blockSize
+WINDOW_WIDTH = fieldSize * block_size
+WINDOW_HEIGHT = fieldSize * block_size
 pygame.init()
 SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 CLOCK = pygame.time.Clock()
 SCREEN.fill(WHITE)
-arg = blockSize, WINDOW_WIDTH, WINDOW_HEIGHT, BLACK
+arg = block_size, WINDOW_WIDTH, WINDOW_HEIGHT, BLACK
 
+radius = float(block_size/30)
 
-def render(arg):
+def render(arg): # Рендерит поле, и клетки на нём
     draw_grid(arg)
 
-    for i in cells:
-        print(i[0]["xy"])
-        #if i[0]["xy"] != (0, 0):
-        #    print(i[0]["xy"])
-
-
-
-    for event in pygame.event.get():
+    for event in pygame.event.get(): # Выход при нажатии на крестик
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
+    for cell in cells: # Тут идёт проверка на то словарь ли ли в cell[0]
+        if isinstance(cell[0], dict): #и если нет, то читаю координаты и рисую
+            if cell[0]["xy"] != (0,0):
+                x, y = cell[0]["xy"]
+                pygame.draw.circle(SCREEN, NEW_CELL, (x, y), 13)
+        else: #а если да, то ругаюсь. Это сделано потому, что в add_cell последние из cells являются bool-ами
+            print(cell)
+            print(f"Invalid data type: {type(cell[0])}")
+
     pygame.display.update()
+
 
 
 def draw_grid(arg):
     # Set the size of the grid block
-    blockSize, WINDOW_WIDTH, WINDOW_HEIGHT, BLACK = arg
-    for x in range(0, WINDOW_WIDTH, blockSize):
-        for y in range(0, WINDOW_HEIGHT, blockSize):
-            rect = pygame.Rect(x, y, blockSize, blockSize)
+    block_size, WINDOW_WIDTH, WINDOW_HEIGHT, BLACK = arg
+    for x in range(0, WINDOW_WIDTH, block_size):
+        for y in range(0, WINDOW_HEIGHT, block_size):
+            rect = pygame.Rect(x, y, block_size, block_size)
             pygame.draw.rect(SCREEN, BLACK, rect, 1)
 
 
@@ -296,11 +303,11 @@ def setup():
     #нонаме - перец с костью
 
     #simplified_cells_print()
-    add_cell(3) # ахах ты лох, переделуй) нихуя не працює)))))
+    #add_cell(3) # ахах ты лох, переделуй) нихуя не працює))))) 
     #print(cells)
     #simplified_cells_print()
     # print(genome)
-    render(arg)
+
 
 
 def update():
@@ -317,6 +324,7 @@ def loop():
     n = 0
 
     while(n<10000000):
+        render(arg)
         update()
         n += 1
 
