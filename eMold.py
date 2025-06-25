@@ -1905,6 +1905,7 @@ def render_field():
         case 2:
             current_cell_id = cells[0][2]
 
+
             while (current_cell_id != 0):
                 current_cell = cells[current_cell_id][0]
                 x, y = current_cell["xy"]
@@ -1916,8 +1917,18 @@ def render_field():
 
                 render_cell(current_cell_id, (render_x, render_y))
 
+                pygame.draw.rect(SCREEN, (41, 49, 51), [0 - block_size, 0 - block_size, block_size, block_size])
 
                 current_cell_id = next_cell(current_cell_id)
+
+            # Отрисовка границ поля
+            # Проходим по всем индексам поля и рисуем рамку по четырём сторонам
+            for i in range(fieldSize):
+                for x, y in [(i, 0), (i, fieldSize - 1), (0, i), (fieldSize - 1, i)]:  # Прохожусь по всем краям поля 
+                    render_x, render_y = get_axy_from_fxy(x, y)
+                    render_x -= offset_x
+                    render_y -= offset_y
+                    pygame.draw.rect(SCREEN, (41, 49, 51), [render_x, render_y, block_size, block_size])
 
 
 def hudo_render(): # рендер худа
@@ -2142,13 +2153,16 @@ def offset_vertical(int):
 def scale(int):
     global block_size
     global rad1
-    if block_size + int <= 5: # вот эту хуйлушу добаваил беззымянник
+    global render_traverse_mode
+    if block_size + int <= 5: # Это ограничитель минимального масштаба от безымянника
         block_size = 5
+        render_traverse_mode = 2
         rad1 = 0.25 * block_size
-    if block_size + int <= 0 or block_size + int >= 50:
+    elif block_size + int <= 0 or block_size + int >= 50:       
         pass
     else:
         block_size += int
+        render_traverse_mode = 1
         rad1 = 0.25 * block_size
 
 def set_interval(int):
